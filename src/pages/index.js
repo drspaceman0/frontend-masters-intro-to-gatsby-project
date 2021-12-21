@@ -1,4 +1,6 @@
 import * as React from 'react'; 
+import { Seo } from '../components/seo.js';
+
 import { Link, useStaticQuery, graphql } from 'gatsby';
  export default function IndexPage() {
   const data = useStaticQuery(graphql`
@@ -13,6 +15,7 @@ import { Link, useStaticQuery, graphql } from 'gatsby';
   const meta = data?.site?.siteMetadata ?? {};
    return (
     <>
+    <Seo />
       <header>
         <Link to="/">{meta.title}</Link>
       </header>
