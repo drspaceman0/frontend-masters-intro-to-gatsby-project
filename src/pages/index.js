@@ -1,13 +1,14 @@
-import * as React from 'react';  
+import * as React from 'react';
 import { Link, useStaticQuery, graphql } from 'gatsby';
 import { StaticImage } from 'gatsby-plugin-image';
 import Layout from '../components/layout.js';
+
 import { imageWrapper } from '../styles/index.module.css';
 
- export default function IndexPage() {
-    const data = useStaticQuery(graphql`
+export default function IndexPage() {
+  const data = useStaticQuery(graphql`
     query GetBlogPosts {
-      allMdx(sort: {fields: frontmatter___date, order: DESC}) {
+      allMdx(sort: { order: DESC, fields: frontmatter___date }, limit: 10) {
         nodes {
           id
           slug
@@ -18,12 +19,28 @@ import { imageWrapper } from '../styles/index.module.css';
           }
         }
       }
+      allSanityEpisode(
+        sort: { fields: date, order: DESC }
+        filter: { youtubeID: { ne: null } }
+        limit: 20
+      ) {
+        nodes {
+          id
+          title
+          guest {
+            name
+          }
+          gatsbyPath(filePath: "/episode/{SanityEpisode.slug__current}")
+        }
+      }
     }
   `);
 
   const posts = data.allMdx.nodes;
-    return (
-      <Layout>
+  const episodes = data.allSanityEpisode.nodes;
+
+  return (
+    <Layout>
       <div className={imageWrapper}>
         <StaticImage
           src="../images/ivana-la-61jg6zviI7I-unsplash.jpg"
@@ -33,8 +50,9 @@ import { imageWrapper } from '../styles/index.module.css';
           height={300}
         />
       </div>
-        <h1>Hello Frontend Masters!</h1>
-        <Link to="/about">About this site</Link>
+
+      <h1>Hello Frontend Masters!</h1>
+      <Link to="/about">About this site</Link>
 
       <h2>Check out my recent blog posts</h2>
       <ul>
@@ -45,6 +63,22 @@ import { imageWrapper } from '../styles/index.module.css';
           </li>
         ))}
       </ul>
-     </Layout>
-   );
- }
++
+      <h2>
+        Latest episodes of <em>Learn With Jason</em>
+      </h2>
+      <ul>
+        {episodes.map((episode) => (
+          <li key={episode.id}>
+            <Link to={episode.gatsbyPath}>
+              {episode.title} (with {episode.guest?.[0]?.name})
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <a href="https://www.learnwithjason.dev/">
+        Watch all episodes of <em>Learn With Jason</em>
+      </a>
+    </Layout>
+  );
+}
