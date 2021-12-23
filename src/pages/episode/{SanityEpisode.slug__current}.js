@@ -25,12 +25,21 @@ export const query = graphql`
 export default function SanityEpisode({ data }) {
   const episode = data.sanityEpisode;
 
+  // check for missing images 
+  let imageLoaded = true;
+  if(!episode.image || !episode.image.asset) {
+    imageLoaded = false;
+}
+  
   return (
     <Layout title={episode.title} description={episode.description}>
-      <GatsbyImage
-        image={episode.image.asset.gatsbyImageData}
-        alt={episode.title}
-      />
+     {
+         !imageLoaded ? "" : 
+         <GatsbyImage
+            image={episode.image.asset.gatsbyImageData}
+            alt={episode.title}
+        />
+     }
       <h1>{episode.title}</h1>
       <p>
         (posted {episode.date}) — {episode.description}
